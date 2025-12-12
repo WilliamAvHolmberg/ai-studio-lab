@@ -1,0 +1,151 @@
+---
+description: TypeScript conventions and type definitions
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# TypeScript Conventions
+
+## Central Type Definitions
+
+All types live in `types.ts`. Import from there:
+
+```tsx
+import { ProjectState, Phase, Task, Specification } from './types';
+```
+
+## Core Types
+
+### Phase Enum
+```tsx
+export enum Phase {
+  SPECIFY = 'SPECIFY',
+  PLAN = 'PLAN',
+  TASKS = 'TASKS',
+  IMPLEMENT = 'IMPLEMENT',
+}
+```
+
+### ProjectState
+The root state object containing everything:
+
+```tsx
+export interface ProjectState {
+  name: string;
+  currentPhase: Phase;
+  spec: Specification;
+  plan: ArchitecturePlan;
+  tasks: Task[];
+  isGenerating: boolean;
+  lastUpdated: Date;
+}
+```
+
+### Specification
+Output of the Specify phase:
+
+```tsx
+export interface Specification {
+  description: string;
+  personas: Persona[];
+  requirements: Requirement[];
+  successCriteria: string[];
+  followUpQuestions?: string[];
+}
+
+export interface Persona {
+  role: string;
+  description: string;
+  painPoints: string[];
+}
+
+export interface Requirement {
+  id: string;
+  title: string;
+  description: string;
+  priority: 'High' | 'Medium' | 'Low';
+}
+```
+
+### ArchitecturePlan
+Output of the Plan phase:
+
+```tsx
+export interface ArchitecturePlan {
+  overview: string;
+  stack: string[];
+  components: ArchitectureComponent[];
+  databaseSchema: string;
+}
+
+export interface ArchitectureComponent {
+  name: string;
+  type: 'Frontend' | 'Backend' | 'Database' | 'Service';
+  tech: string;
+  description: string;
+}
+```
+
+### Task
+Output of the Tasks phase:
+
+```tsx
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: 'Todo' | 'In Progress' | 'Review' | 'Done';
+  complexity: 'S' | 'M' | 'L';
+  assignedTo: string;
+  generatedCode?: string;
+}
+```
+
+## Type Patterns
+
+### String Literal Unions
+Use for constrained values instead of plain strings:
+
+```tsx
+priority: 'High' | 'Medium' | 'Low';
+status: 'Todo' | 'In Progress' | 'Review' | 'Done';
+complexity: 'S' | 'M' | 'L';
+```
+
+### Optional Properties
+Mark with `?` for optional fields:
+
+```tsx
+followUpQuestions?: string[];
+generatedCode?: string;
+```
+
+### Component Props
+Define interfaces for props:
+
+```tsx
+interface PhaseSpecifyProps {
+  projectState: ProjectState;
+  setProjectState: React.Dispatch<React.SetStateAction<ProjectState>>;
+  onNext: () => void;
+}
+```
+
+### React.FC Typing
+Type functional components explicitly:
+
+```tsx
+const PhaseSpecify: React.FC<PhaseSpecifyProps> = ({ projectState, setProjectState, onNext }) => {
+  // ...
+};
+```
+
+## Gemini Schema Alignment
+
+JSON schemas in `geminiService.ts` must mirror TypeScript interfaces:
+
+| TypeScript | Gemini Schema |
+|------------|---------------|
+| `string` | `Type.STRING` |
+| `string[]` | `Type.ARRAY` with `items: { type: Type.STRING }` |
+| `'A' \| 'B'` | `Type.STRING` with `enum: ["A", "B"]` |
+| `interface` | `Type.OBJECT` with `properties` and `required` |

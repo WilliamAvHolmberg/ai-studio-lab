@@ -1,0 +1,70 @@
+---
+description: High-level architecture, tech stack, and project structure for SpecFlow
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# SpecFlow Project Overview
+
+SpecFlow is a **frontend-only React app** that uses **Gemini AI** to help developers transform product ideas into specifications, architecture plans, tasks, and code.
+
+## 4-Phase Wizard Flow
+
+```
+Specify → Plan → Tasks → Implement
+```
+
+| Phase | Purpose |
+|-------|---------|
+| Specify | Transform product vision into personas, requirements, and success criteria |
+| Plan | Generate architecture overview, tech stack, and database schema |
+| Tasks | Break down the project into actionable implementation tasks |
+| Implement | AI generates code for each task |
+
+## Tech Stack
+
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Utility-first styling (via CDN in index.html)
+- **@google/genai** - Gemini AI SDK for structured output
+- **lucide-react** - Icon library
+- **recharts** - Data visualization
+
+## Project Structure
+
+```
+web/
+├── App.tsx              # Root component, state management, phase routing
+├── types.ts             # All TypeScript interfaces and enums
+├── index.tsx            # Entry point
+├── index.html           # HTML template with Tailwind CDN
+├── components/
+│   ├── Layout.tsx       # Shell with sidebar navigation
+│   ├── PhaseSpecify.tsx # Specification phase UI
+│   ├── PhasePlan.tsx    # Architecture planning phase UI
+│   ├── PhaseTasks.tsx   # Task breakdown phase UI
+│   └── PhaseImplement.tsx # Code generation phase UI
+└── services/
+    └── geminiService.ts # All Gemini AI API calls with JSON schemas
+```
+
+## State Architecture
+
+All project state lives in `App.tsx` and is passed down via props:
+
+```tsx
+const [projectState, setProjectState] = useState<ProjectState>(INITIAL_STATE);
+```
+
+Phase components receive:
+- `projectState` - Read current state
+- `setProjectState` - Update state via functional updates
+- `onNext` - Navigate to next phase (except Implement)
+
+## Key Patterns
+
+1. **No backend** - All AI calls go directly to Gemini from the browser
+2. **Structured AI output** - JSON schemas ensure reliable responses
+3. **Minimal dependencies** - Only essential libraries
+4. **Inline Tailwind** - No separate CSS files
+5. **Functional state updates** - Always use `prev => ({ ...prev, ... })`

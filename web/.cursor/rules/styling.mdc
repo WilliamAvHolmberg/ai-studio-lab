@@ -1,0 +1,136 @@
+---
+description: Tailwind patterns and design system for SpecFlow
+globs: ["**/*.tsx"]
+---
+
+# Styling Guide
+
+## Design Philosophy
+
+Light, minimal, and translucent. Focus on content with subtle depth through shadows.
+
+## Color Palette
+
+Primary: **Zinc scale** (zinc-50 through zinc-900)
+
+| Token | Usage |
+|-------|-------|
+| `zinc-900` | Primary text, buttons, accents |
+| `zinc-500` | Secondary text |
+| `zinc-400` | Tertiary/muted text, labels |
+| `zinc-100` | Borders, dividers |
+| `zinc-50` | Subtle backgrounds, badges |
+| `white` | Cards, primary backgrounds |
+
+Semantic colors:
+- `emerald-*` - Success states
+- `orange-*` - High priority
+- `blue-*` - Medium priority
+
+## Background Colors
+
+```tsx
+// App background
+className="bg-[#FAFAFA]"
+
+// Sidebar
+className="bg-[#FBFBFB]"
+
+// Cards & panels
+className="bg-white"
+```
+
+## Border Radius Scale
+
+| Size | Usage |
+|------|-------|
+| `rounded-md` | Small tags, badges |
+| `rounded-xl` | Buttons, small cards |
+| `rounded-2xl` | Medium cards, inputs |
+| `rounded-3xl` | Large panels, containers |
+| `rounded-[2rem]` | Extra-large sections |
+| `rounded-[2.5rem]` | Hero containers |
+| `rounded-full` | Pills, avatars, round buttons |
+
+## Shadow Patterns
+
+```tsx
+// Subtle card shadow
+className="shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
+
+// Medium elevation
+className="shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+
+// Focus state enhancement
+className="focus-within:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
+
+// Dark element glow
+className="shadow-xl shadow-zinc-900/10"
+```
+
+## Common Component Patterns
+
+### Cards
+```tsx
+<div className="bg-white rounded-3xl border border-zinc-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+```
+
+### Primary Button
+```tsx
+<button className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg shadow-zinc-900/20">
+```
+
+### Secondary Button
+```tsx
+<button className="flex items-center gap-2 px-8 py-4 bg-white text-zinc-900 border border-zinc-200 rounded-full hover:bg-zinc-50 transition-all">
+```
+
+### Section Header
+```tsx
+<h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+```
+
+### Dark Panel (CTA)
+```tsx
+<div className="bg-zinc-900 p-8 rounded-3xl shadow-xl shadow-zinc-900/10 text-zinc-300">
+```
+
+### Input/Textarea
+```tsx
+<textarea className="w-full h-48 p-8 rounded-3xl border-none focus:ring-0 resize-none text-zinc-800 placeholder-zinc-300 text-lg bg-transparent font-light" />
+```
+
+## Typography
+
+- `font-light` - Body text, descriptions
+- `font-medium` - Titles, labels
+- `font-semibold` - Active states, emphasis
+- `font-bold` - Section headers (uppercase)
+- `tracking-tight` - Headings
+- `tracking-widest` - Uppercase labels
+
+## Transitions
+
+```tsx
+// Standard transition
+className="transition-all duration-300"
+
+// Slower for entries
+className="duration-500"
+
+// Entry animations
+className="animate-in fade-in slide-in-from-bottom-8 duration-700"
+```
+
+## Hover Effects
+
+```tsx
+// Scale
+className="hover:scale-105 active:scale-95"
+
+// Shadow enhancement
+className="hover:shadow-md"
+
+// Border highlight
+className="hover:border-zinc-300"
+```

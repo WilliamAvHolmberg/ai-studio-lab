@@ -1,0 +1,101 @@
+---
+description: React component conventions and phase component structure
+globs: ["**/*.tsx"]
+---
+
+# React Component Patterns
+
+## Phase Component Interface
+
+All phase components follow this pattern:
+
+```tsx
+interface PhaseXxxProps {
+  projectState: ProjectState;
+  setProjectState: React.Dispatch<React.SetStateAction<ProjectState>>;
+  onNext?: () => void; // Optional for final phase
+}
+
+const PhaseXxx: React.FC<PhaseXxxProps> = ({ projectState, setProjectState, onNext }) => {
+  // ...
+};
+
+export default PhaseXxx;
+```
+
+## State Updates
+
+Always use functional updates to avoid stale state:
+
+```tsx
+// ✅ Correct
+setProjectState(prev => ({
+  ...prev,
+  spec: { ...prev.spec, ...generatedSpec }
+}));
+
+// ❌ Wrong - stale closure
+setProjectState({
+  ...projectState,
+  spec: { ...projectState.spec, ...generatedSpec }
+});
+```
+
+## Loading State Pattern
+
+Each phase manages its own loading state for AI generation:
+
+```tsx
+const [isGenerating, setIsGenerating] = useState(false);
+
+const handleGenerate = async () => {
+  setIsGenerating(true);
+  try {
+    const result = await generateXxx();
+    setProjectState(prev => ({ ...prev, ...result }));
+  } catch (error) {
+    alert("Failed to generate. Please try again.");
+  } finally {
+    setIsGenerating(false);
+  }
+};
+```
+
+## Component Structure
+
+1. **Local state** - Loading states, form inputs
+2. **Derived values** - Computed from props (`hasTasks`, `hasSpec`)
+3. **Handlers** - Async generation, navigation
+4. **Render** - Conditional UI based on generation state
+
+## Animation Classes
+
+Use these Tailwind classes for smooth entry animations:
+
+```tsx
+<div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+```
+
+## Icon Usage
+
+Import icons from lucide-react:
+
+```tsx
+import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+
+// Usage
+<Sparkles className="w-4 h-4" />
+```
+
+## Conditional Rendering
+
+Check for generated content before showing:
+
+```tsx
+const hasSpec = projectState.spec.requirements.length > 0;
+const hasTasks = projectState.tasks.length > 0;
+
+{hasSpec && (
+  <section>...</section>
+)}
+```

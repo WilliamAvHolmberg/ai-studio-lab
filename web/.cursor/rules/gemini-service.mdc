@@ -1,0 +1,107 @@
+---
+description: How to work with Gemini AI, JSON schemas, and prompts
+globs: ["**/geminiService.ts", "**/services/**"]
+---
+
+# Gemini AI Integration
+
+## SDK Setup
+
+```tsx
+import { GoogleGenAI, Type } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: 'YOUR_KEY' });
+const MODEL_NAME = "gemini-2.5-flash";
+```
+
+## JSON Schema Pattern
+
+Define schemas using `Type` enum for structured output:
+
+```tsx
+const SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    field: { type: Type.STRING },
+    items: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          priority: { type: Type.STRING, enum: ["High", "Medium", "Low"] }
+        },
+        required: ["name", "priority"]
+      }
+    }
+  },
+  required: ["field", "items"]
+};
+```
+
+## Making AI Calls
+
+```tsx
+export const generateXxx = async (input: string): Promise<OutputType> => {
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: `Your prompt here: ${input}`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: YOUR_SCHEMA,
+      },
+    });
+
+    const text = response.text;
+    if (!text) throw new Error("No response from AI");
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Error generating:", error);
+    throw error;
+  }
+};
+```
+
+## Available Service Functions
+
+| Function | Input | Output | Purpose |
+|----------|-------|--------|---------|
+| `generateSpecification` | description string | Partial<Specification> | Personas, requirements, success criteria |
+| `generateArchitecture` | Specification | ArchitecturePlan | Stack, components, DB schema |
+| `generateTasks` | Spec + Plan | Task[] | Implementation backlog |
+| `generateTaskCode` | Task + Plan | string | Code for a single task |
+
+## Prompt Patterns
+
+Role-based prompts work well:
+
+```
+You are a Senior Product Manager. Analyze this product description...
+You are a Principal Software Architect. Based on the following specification...
+You are a Technical Project Manager. Break down this project...
+You are a Senior Full Stack Engineer. Implement the following task...
+```
+
+## Schema Best Practices
+
+1. **Required fields** - Always specify which fields are mandatory
+2. **Enums** - Use for constrained values (`priority`, `status`, `complexity`)
+3. **Descriptions** - Add to complex fields for better AI understanding
+4. **Nested objects** - Mirror your TypeScript interfaces
+
+## Code Generation (No Schema)
+
+For freeform code output, skip the schema:
+
+```tsx
+const response = await ai.models.generateContent({
+  model: MODEL_NAME,
+  contents: `Generate code for: ${task}`,
+  config: {
+    maxOutputTokens: 4000,
+  }
+});
+
+return response.text || "// No code generated";
+```
