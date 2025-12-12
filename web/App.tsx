@@ -75,7 +75,7 @@ const App: React.FC = () => {
     <Layout 
       currentPhase={projectState.currentPhase} 
       onPhaseChange={handlePhaseChange}
-      projectName={projectState.name}
+      projectName={projectState.name + " (but broken lol)"}
     >
       {renderPhase()}
     </Layout>
